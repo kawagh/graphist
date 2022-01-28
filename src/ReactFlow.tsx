@@ -143,7 +143,7 @@ const DnDFlow = () => {
         setLastNodeId(parseInt(node.id));
 
         // 反映が遅い
-        setxIsNext(history[lastNodeId].squares.filter(x => x !== null).length % 2 != 0);
+        setxIsNext(history[lastNodeId].squares.filter(x => x !== null).length % 2 !== 0);
     }
 
     const handleClick = () => {
@@ -158,8 +158,13 @@ const DnDFlow = () => {
 
         setElements((es) => es.concat(newNode));
         setElements((es) => es.concat(newEdge));
+
+        // sort
+        setElements((es) => getLayoutedElements(es, 'TB'));
+
         // 追加されたノードを直近のノードにする
         setLastNodeId(parseInt(newNode.id));
+
     }
 
     // const onDrop = (event: any) => {
