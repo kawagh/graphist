@@ -7,7 +7,8 @@ import ReactFlow, {
     MiniMap,
     Controls,
     isNode,
-    Position
+    Position,
+    isEdge
 } from 'react-flow-renderer';
 import dagre from 'dagre';
 import Boards from './components/Boards';
@@ -103,10 +104,9 @@ const DnDFlow = () => {
             return;
         }
 
-        let _xIsNext = currentHistory.squares.filter(x => x != null).length % 2 != 0;
+        let _xIsNext = currentHistory.squares.filter(x => x != null).length % 2 !== 0;
         const newSquares = currentHistory.squares.slice();
         newSquares[i] = _xIsNext ? 'X' : 'O';
-        // newSquares[i] = xIsNext ? 'X' : 'O';
         setHistory(history.concat([{ squares: newSquares }]));
         setxIsNext(!_xIsNext);
 
@@ -137,8 +137,8 @@ const DnDFlow = () => {
         event.dataTransfer.dropEffect = 'move';
     };
     const onNodeMouseEnter = (event: any, node: any) => {
-        console.log("on node", node.id)
-        console.log("on node", current.squares);
+        // console.log("on node", node.id)
+        // console.log("on node", current.squares);
         event.preventDefault();
         setLastNodeId(parseInt(node.id));
 
@@ -147,6 +147,30 @@ const DnDFlow = () => {
     }
 
     const handleClick = () => {
+
+        // TODO 遷移先に同一局面が存在する場合、node,edgeは追加しない
+        const edges = elements.filter(elem => isEdge(elem)) as Edge[]
+        const adj_edges = edges.filter(edge => edge.source === lastNodeId.toString());
+        const target_ids = adj_edges.map((edge) => edge.target);
+        console.log(target_ids);
+        // 隣接頂点を列挙
+        const adj_nodes = (elements.filter(elem => isNode(elem)) as Node[])
+            .filter(node => target_ids.includes(node.id));
+        console.log("adj_nodes", adj_nodes);
+        for (const tid of target_ids) {
+            console.log(tid, history[parseInt(tid)])
+            if (history[parseInt(tid)] === history[history.length - 1]) {
+                console.log("SAME appear");
+                // FIXME
+                // setLastNodeId(parseInt(tid));
+                // history.pop();
+                // setHistory(history);
+                // setxIsNext(!xIsNext);
+                // return;
+            }
+        }
+
+
         // nodeとedgeを新たに追加する
         const newNode: Node = {
             id: getId(),
@@ -154,8 +178,8 @@ const DnDFlow = () => {
             position: { x: Math.random() * 300, y: Math.random() * 300 },
             data: { label: `${id}` },
         };
-        const newEdge = { id: `e${lastNodeId}-${newNode.id}`, source: `${lastNodeId}`, target: `${newNode.id}`, label: 'e' };
-
+        const newEdge: Edge = { id: `e${lastNodeId}-${newNode.id}`, source: `${lastNodeId}`, target: `${newNode.id}`, label: `e${lastNodeId}-${newNode.id}` };
+        // elements
         setElements((es) => es.concat(newNode));
         setElements((es) => es.concat(newEdge));
 
