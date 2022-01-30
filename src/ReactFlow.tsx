@@ -107,8 +107,6 @@ const DnDFlow = () => {
         let _xIsNext = currentHistory.squares.filter(x => x != null).length % 2 !== 0;
         const newSquares = currentHistory.squares.slice();
         newSquares[i] = _xIsNext ? 'X' : 'O';
-        setHistory(history.concat([{ squares: newSquares }]));
-        setxIsNext(!_xIsNext);
 
         // グラフ更新の処理
 
@@ -123,7 +121,13 @@ const DnDFlow = () => {
         console.log("adj_nodes", adj_nodes);
         for (const tid of target_ids) {
             console.log(tid, history[parseInt(tid)])
-            if (history[parseInt(tid)] === history[history.length - 1]) {
+            alert(newSquares);
+            alert(history[parseInt(tid)].squares)
+            // equalにならない
+            alert(newSquares == history[parseInt(tid)].squares);
+            alert(history[parseInt(tid)].squares)
+            if (history[parseInt(tid)].squares === newSquares) {
+                // if (history[parseInt(tid)] === history[history.length - 1]) {
                 console.log("SAME appear");
                 alert("same");
                 // FIXME
@@ -134,6 +138,7 @@ const DnDFlow = () => {
                 // return;
             }
         }
+
         //遷移先に同一局面が存在しない場合
         // nodeとedgeを新たに追加する
         const newNode: Node = {
@@ -148,6 +153,9 @@ const DnDFlow = () => {
         setElements((es) => es.concat(newEdge));
         // sort
         setElements((es) => getLayoutedElements(es, 'TB'));
+
+        setHistory(history.concat([{ squares: newSquares }]));
+        setxIsNext(!_xIsNext);
         // 追加されたノードを直近のノードにする
         setLastNodeId(parseInt(newNode.id));
 
