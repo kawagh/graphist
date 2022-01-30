@@ -111,7 +111,46 @@ const DnDFlow = () => {
         setxIsNext(!_xIsNext);
 
         // グラフ更新の処理
-        handleClick();
+
+        // TODO 遷移先に同一局面が存在する場合、node,edgeは追加しない
+        const edges = elements.filter(elem => isEdge(elem)) as Edge[]
+        const adj_edges = edges.filter(edge => edge.source === lastNodeId.toString());
+        const target_ids = adj_edges.map((edge) => edge.target);
+        console.log(target_ids);
+        // 隣接頂点を列挙
+        const adj_nodes = (elements.filter(elem => isNode(elem)) as Node[])
+            .filter(node => target_ids.includes(node.id));
+        console.log("adj_nodes", adj_nodes);
+        for (const tid of target_ids) {
+            console.log(tid, history[parseInt(tid)])
+            if (history[parseInt(tid)] === history[history.length - 1]) {
+                console.log("SAME appear");
+                alert("same");
+                // FIXME
+                // setLastNodeId(parseInt(tid));
+                // history.pop();
+                // setHistory(history);
+                // setxIsNext(!xIsNext);
+                // return;
+            }
+        }
+        //遷移先に同一局面が存在しない場合
+        // nodeとedgeを新たに追加する
+        const newNode: Node = {
+            id: getId(),
+            type: "default",
+            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            data: { label: `${id}` },
+        };
+        const newEdge: Edge = { id: `e${lastNodeId}-${newNode.id}`, source: `${lastNodeId}`, target: `${newNode.id}`, label: `e${lastNodeId}-${newNode.id}` };
+        // elements
+        setElements((es) => es.concat(newNode));
+        setElements((es) => es.concat(newEdge));
+        // sort
+        setElements((es) => getLayoutedElements(es, 'TB'));
+        // 追加されたノードを直近のノードにする
+        setLastNodeId(parseInt(newNode.id));
+
     }
     const resetState = () => {
         setxIsNext(false);
@@ -144,51 +183,6 @@ const DnDFlow = () => {
 
         // 反映が遅い
         setxIsNext(history[lastNodeId].squares.filter(x => x !== null).length % 2 !== 0);
-    }
-
-    const handleClick = () => {
-
-        // TODO 遷移先に同一局面が存在する場合、node,edgeは追加しない
-        const edges = elements.filter(elem => isEdge(elem)) as Edge[]
-        const adj_edges = edges.filter(edge => edge.source === lastNodeId.toString());
-        const target_ids = adj_edges.map((edge) => edge.target);
-        console.log(target_ids);
-        // 隣接頂点を列挙
-        const adj_nodes = (elements.filter(elem => isNode(elem)) as Node[])
-            .filter(node => target_ids.includes(node.id));
-        console.log("adj_nodes", adj_nodes);
-        for (const tid of target_ids) {
-            console.log(tid, history[parseInt(tid)])
-            if (history[parseInt(tid)] === history[history.length - 1]) {
-                console.log("SAME appear");
-                // FIXME
-                // setLastNodeId(parseInt(tid));
-                // history.pop();
-                // setHistory(history);
-                // setxIsNext(!xIsNext);
-                // return;
-            }
-        }
-
-
-        // nodeとedgeを新たに追加する
-        const newNode: Node = {
-            id: getId(),
-            type: "default",
-            position: { x: Math.random() * 300, y: Math.random() * 300 },
-            data: { label: `${id}` },
-        };
-        const newEdge: Edge = { id: `e${lastNodeId}-${newNode.id}`, source: `${lastNodeId}`, target: `${newNode.id}`, label: `e${lastNodeId}-${newNode.id}` };
-        // elements
-        setElements((es) => es.concat(newNode));
-        setElements((es) => es.concat(newEdge));
-
-        // sort
-        setElements((es) => getLayoutedElements(es, 'TB'));
-
-        // 追加されたノードを直近のノードにする
-        setLastNodeId(parseInt(newNode.id));
-
     }
 
     // const onDrop = (event: any) => {
