@@ -218,6 +218,7 @@ const DnDFlow = () => {
         <div className="dndflow">
             <div className="flex-box">
                 <div className="flex-box-item">
+                    <h2>Game View</h2>
                     <div>current: {lastNodeId}</div>
                     <Boards
                         squares={current.squares}
@@ -225,13 +226,12 @@ const DnDFlow = () => {
                     />
 
                     <div className="controls">
-                        <button onClick={() => onLayout('TB')}>vertical layout</button>
-                        {/* <button onClick={() => onLayout('LR')}>horizontal layout</button> */}
                     </div>
                     <div> {winner != null && status} </div>
                 </div>
 
                 <div className="flex-box-item">
+                    <h2>History Graph</h2>
                     <ReactFlowProvider>
                         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                             <ReactFlow
@@ -242,7 +242,7 @@ const DnDFlow = () => {
                                 onNodeMouseEnter={onNodeMouseEnter}
                                 // onDrop={onDrop}
                                 onDragOver={onDragOver}
-                                style={{ height: 800, width: 1000 }}
+                                style={{ height: 500, width: 1000 }}
                             >
                                 {/* <MiniMap
                                     nodeStrokeColor={(n: any) => {

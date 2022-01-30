@@ -3,6 +3,7 @@
 }
 .flex-box{
   display: flex;
+  justify-content: center;
 }
 .flex-box-item{
   padding: 30px;
