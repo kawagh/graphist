@@ -108,9 +108,10 @@ const DnDFlow = () => {
         const newSquares = currentHistory.squares.slice();
         newSquares[i] = _xIsNext ? 'X' : 'O';
 
+
         // グラフ更新の処理
 
-        // TODO 遷移先に同一局面が存在する場合、node,edgeは追加しない
+        // 遷移先に同一局面が存在する場合、node,edgeは追加しない
         const edges = elements.filter(elem => isEdge(elem)) as Edge[]
         const adj_edges = edges.filter(edge => edge.source === lastNodeId.toString());
         const target_ids = adj_edges.map((edge) => edge.target);
@@ -121,21 +122,10 @@ const DnDFlow = () => {
         console.log("adj_nodes", adj_nodes);
         for (const tid of target_ids) {
             console.log(tid, history[parseInt(tid)])
-            alert(newSquares);
-            alert(history[parseInt(tid)].squares)
-            // equalにならない
-            alert(newSquares == history[parseInt(tid)].squares);
-            alert(history[parseInt(tid)].squares)
-            if (history[parseInt(tid)].squares === newSquares) {
-                // if (history[parseInt(tid)] === history[history.length - 1]) {
-                console.log("SAME appear");
-                alert("same");
-                // FIXME
-                // setLastNodeId(parseInt(tid));
-                // history.pop();
-                // setHistory(history);
-                // setxIsNext(!xIsNext);
-                // return;
+            if (newSquares.toString() === history[parseInt(tid)].squares.toString()) {
+                setxIsNext(!_xIsNext);
+                setLastNodeId(parseInt(tid));
+                return;
             }
         }
 
@@ -145,7 +135,7 @@ const DnDFlow = () => {
             id: getId(),
             type: "default",
             position: { x: Math.random() * 300, y: Math.random() * 300 },
-            data: { label: `${id}` },
+            data: { label: `${id - 1}` },
         };
         const newEdge: Edge = { id: `e${lastNodeId}-${newNode.id}`, source: `${lastNodeId}`, target: `${newNode.id}`, label: `e${lastNodeId}-${newNode.id}` };
         // elements
@@ -228,7 +218,7 @@ const DnDFlow = () => {
         <div className="dndflow">
             <div className="flex-box">
                 <div className="flex-box-item">
-                    <div>current: {lastNodeId + 1}</div>
+                    <div>current: {lastNodeId}</div>
                     <Boards
                         squares={current.squares}
                         onClick={(i) => { GamehandleClick(i); }}
